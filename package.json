@@ -1,0 +1,17 @@
+{
+  "name": "pc-offer-estimator",
+  "version": "1.0.0",
+  "description": "PC Offer Estimator",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "build-css": "npx tailwindcss -i ./src/input.css -o ./public/output.css --minify"
+  },
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.14"
+  }
+}

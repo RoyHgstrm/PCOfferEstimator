@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Offer Estimator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet">
+    <style>
+        .dark .bg-white { background-color: #1f2937; }
+        .dark .text-gray-800 { color: #d1d5db; }
+        .dark .text-gray-600 { color: #9ca3af; }
+        .dark .bg-gradient-to-r { background-image: linear-gradient(to right, #374151, #111827); }
+    </style>
+</head>
+<body class="bg-gradient-to-r from-blue-200 via-indigo-200 to-purple-200 dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-900 dark:to-black min-h-screen flex items-center justify-center transition-colors duration-300">
+
+    <!-- Dark Mode Toggle Switch -->
+    <div class="absolute top-6 right-6 flex items-center">
+        <label class="swap swap-rotate">
+            <input id="darkModeToggle" type="checkbox" />
+            <svg class="swap-off fill-current w-8 h-8 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M5.64 17.66a9 9 0 1011.32-11.32A9 9 0 005.64 17.66zM12 20.5a1 1 0 11-2 0v-1.8a1 1 0 012 0v1.8zm0-14.9a1 1 0 11-2 0V3.5a1 1 0 012 0v1.8zm7.49 5.7a1 1 0 10-2 0 1 1 0 102 0zm-12.8 0a1 1 0 11-2 0 1 1 0 112 0zm10.32 6.36a1 1 0 01.7.29l1.26 1.26a1 1 0 01-1.42 1.42L16.3 18.7a1 1 0 010-1.42 1 1 0 01.71-.29zm-8.6-8.6a1 1 0 01.71.29l1.26 1.26a1 1 0 01-1.42 1.42L5.7 8.3a1 1 0 010-1.42 1 1 0 01.71-.29zm10.32 8.6a1 1 0 00.7-.29 1 1 0 000-1.42L15.46 13a1 1 0 10-1.42 1.42l1.26 1.26a1 1 0 00.7.29zm-8.6-8.6a1 1 0 00.7-.29 1 1 0 000-1.42L6.54 5.3a1 1 0 10-1.42 1.42l1.26 1.26a1 1 0 00.7.29z"/>
+            </svg>
+            <svg class="swap-on fill-current w-8 h-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M21.97 12.69A9.99 9.99 0 0111.3 2.02 9.25 9.25 0 009.92 2a9 9 0 100 18.16c.93 0 1.85-.12 2.74-.36a9.99 9.99 0 009.31-7.11zM12 20.5a1 1 0 11-2 0v-1.8a1 1 0 012 0v1.8zm0-14.9a1 1 0 11-2 0V3.5a1 1 0 012 0v1.8zm7.49 5.7a1 1 0 10-2 0 1 1 0 102 0zm-12.8 0a1 1 0 11-2 0 1 1 0 112 0zm10.32 6.36a1 1 0 01.7.29l1.26 1.26a1 1 0 01-1.42 1.42L16.3 18.7a1 1 0 010-1.42 1 1 0 01.71-.29zm-8.6-8.6a1 1 0 01.71.29l1.26 1.26a1 1 0 01-1.42 1.42L5.7 8.3a1 1 0 010-1.42 1 1 0 01.71-.29zm10.32 8.6a1 1 0 00.7-.29 1 1 0 000-1.42L15.46 13a1 1 0 10-1.42 1.42l1.26 1.26a1 1 0 00.7.29zm-8.6-8.6a1 1 0 00.7-.29 1 1 0 000-1.42L6.54 5.3a1 1 0 10-1.42 1.42l1.26 1.26a1 1 0 00.7.29z"/>
+            </svg>
+        </label>
+    </div>
+    
+    <!-- Main Form Container -->
+    <div class="container mx-auto px-6 py-10">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-10 max-w-lg mx-auto transition-colors duration-300">
+            <h1 class="text-4xl font-extrabold text-center text-gray-800 dark:text-gray-300 mb-6">PC Offer Estimator</h1>
+            <p class="text-lg text-gray-800 dark:text-gray-300 text-center mb-8">Enter your PC specifications to get an estimated offer.</p>
+
+            <form id="specsForm" class="space-y-6">
+                <div class="form-control text-gray-800 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="cpuSearch">CPU</label>
+                    <input type="text" id="cpuSearch" placeholder="Search CPU..."
+                           class="input input-bordered w-full rounded-lg shadow-sm mb-2 bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
+                    <select id="cpu" name="cpu" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300 h-32" size="10">
+                        <!-- CPU options will be populated here -->
+                    </select>
+                </div>
+                
+                <div class="form-control text-gray-800 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="gpuSearch">GPU</label>
+                    <input type="text" id="gpuSearch" placeholder="Search GPU..."
+                           class="input input-bordered w-full rounded-lg shadow-sm mb-2 bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
+                    <select id="gpu" name="gpu" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300 h-32" size="10">
+                        <!-- GPU options will be populated here -->
+                    </select>
+                </div>
+            
+                <div class="form-control text-gray-800 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="ram">RAM (GB)</label>
+                    <input type="number" id="ram" name="ram" placeholder="e.g., 16"
+                           class="input input-bordered w-full rounded-lg shadow-sm bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
+                </div>
+            
+                <div class="form-control text-gray-800 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="storage">Storage (GB)</label>
+                    <input type="number" id="storage" name="storage" placeholder="e.g., 512"
+                           class="input input-bordered w-full rounded-lg shadow-sm bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
+                </div>
+            
+                <div class="form-control text-gray-800 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="storageType">Storage Type</label>
+                    <select id="storageType" name="storageType" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300">
+                        <option value="ssd">SSD</option>
+                        <option value="hdd">HDD</option>
+                    </select>
+                </div>
+            
+                <div class="form-control text-gray-800 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="condition">Condition</label>
+                    <select id="condition" name="condition" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300">
+                        <option value="new">New</option>
+                        <option value="like-new">Like New</option>
+                        <option value="used">Used</option>
+                        <option value="worn">Worn</option>
+                    </select>
+                </div>
+            
+                <button type="button" onclick="calculateOffer()" class="btn btn-primary w-full rounded-lg text-lg mt-6">Get Offer</button>
+            </form>
+
+            <div id="offerResult" class="mt-10 hidden">
+                <h2 class="text-2xl font-semibold text-center text-gray-800 dark:text-gray-200">Estimated Offer</h2>
+                <p id="offerAmount" class="text-3xl font-extrabold text-center text-green-600 dark:text-green-400 mt-4"></p>
+            </div>
+
+            <div class="text-gray-600 dark:text-gray-400 text-sm mt-10 space-y-3 border-t border-gray-200 dark:border-gray-600 pt-6">
+                <p><strong>New:</strong> Brand-new, unused, and in original packaging.</p>
+                <p><strong>Like New:</strong> Excellent condition with minimal signs of use.</p>
+                <p><strong>Used:</strong> Regularly used with minor wear, fully functional.</p>
+                <p><strong>Worn:</strong> Heavily used with significant wear, may need repairs.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById("darkModeToggle");
+        darkModeToggle.addEventListener("click", () => {
+            document.documentElement.classList.toggle("dark");
+            localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+        });
+
+        // Load theme from local storage
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem("theme") === "dark") {
+                document.documentElement.classList.add("dark");
+            }
+            filterDropdown('cpuSearch', 'cpu');
+            filterDropdown('gpuSearch', 'gpu');
+        });
+        
+        // Function to filter dropdowns based on input
+        function filterDropdown(inputId, dropdownId) {
+            const input = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            input.addEventListener('input', () => {
+                const filter = input.value.toLowerCase();
+                Array.from(dropdown.options).forEach(option => {
+                    option.style.display = option.text.toLowerCase().includes(filter) ? '' : 'none';
+                });
+            });
+        }
+    </script>
+</body>
+</html>
