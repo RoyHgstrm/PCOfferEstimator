@@ -38,8 +38,8 @@
                 <div class="form-control text-gray-800 dark:text-gray-300">
                     <label class="label font-semibold text-gray-800 dark:text-gray-300" for="cpuSearch">CPU</label>
                     <input type="text" id="cpuSearch" placeholder="Search CPU..."
-                           class="input input-bordered w-full rounded-lg shadow-sm mb-2 bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
-                    <select id="cpu" name="cpu" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300 h-32" size="10">
+                           class="input input-bordered w-full rounded-lg shadow-sm mb-2 bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 text-sm md:text-base">
+                    <select id="cpu" name="cpu" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300 mb-4 md:mb-2 h-32 md:h-32 overflow-auto">
                         <!-- CPU options will be populated here -->
                     </select>
                 </div>
@@ -47,11 +47,14 @@
                 <div class="form-control text-gray-800 dark:text-gray-300">
                     <label class="label font-semibold text-gray-800 dark:text-gray-300" for="gpuSearch">GPU</label>
                     <input type="text" id="gpuSearch" placeholder="Search GPU..."
-                           class="input input-bordered w-full rounded-lg shadow-sm mb-2 bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
-                    <select id="gpu" name="gpu" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300 h-32" size="10">
+                           class="input input-bordered w-full rounded-lg shadow-sm mb-2 bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 text-sm md:text-base">
+                    <select id="gpu" name="gpu" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300 mb-4 md:mb-2 h-32 md:h-32 overflow-auto">
                         <!-- GPU options will be populated here -->
                     </select>
                 </div>
+                
+                
+                
             
                 <div class="form-control text-gray-800 dark:text-gray-300">
                     <label class="label font-semibold text-gray-800 dark:text-gray-300" for="ram">RAM (GB)</label>
@@ -101,6 +104,8 @@
     </div>
 
     <script src="/js/app.js"></script>
+
+    
     <script>
         // Dark mode toggle
         const darkModeToggle = document.getElementById("darkModeToggle");
@@ -108,7 +113,7 @@
             document.documentElement.classList.toggle("dark");
             localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
         });
-
+    
         // Load theme from local storage
         document.addEventListener("DOMContentLoaded", () => {
             if (localStorage.getItem("theme") === "dark") {
@@ -117,8 +122,8 @@
             filterDropdown('cpuSearch', 'cpu');
             filterDropdown('gpuSearch', 'gpu');
         });
-        
-        // Function to filter dropdowns based on input
+    
+        // Function to filter dropdowns based on input, optimized for mobile compatibility
         function filterDropdown(inputId, dropdownId) {
             const input = document.getElementById(inputId);
             const dropdown = document.getElementById(dropdownId);
@@ -127,8 +132,14 @@
                 Array.from(dropdown.options).forEach(option => {
                     option.style.display = option.text.toLowerCase().includes(filter) ? '' : 'none';
                 });
+                dropdown.size = Math.min(5, dropdown.options.length); // Display up to 5 results without scrolling
             });
+    
+            // Ensure dropdown opens on focus for mobile compatibility
+            input.addEventListener('focus', () => dropdown.size = Math.min(5, dropdown.options.length));
+            input.addEventListener('blur', () => setTimeout(() => dropdown.size = 1, 100)); // Delay to allow selection
         }
     </script>
+    
 </body>
 </html>
