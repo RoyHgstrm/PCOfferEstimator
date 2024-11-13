@@ -1,0 +1,252 @@
+[
+    {
+        "brand": "NVIDIA",
+        "series": "1000 Series",
+        "models": [
+            {
+                "name": "GTX 1080 Ti",
+                "launch_date": 2017,
+                "core_clock_mhz": 1480,
+                "boost_clock_mhz": 1582,
+                "memory_gb": 11,
+                "price_usd": 699
+            },
+            {
+                "name": "GTX 1080",
+                "launch_date": 2016,
+                "core_clock_mhz": 1607,
+                "boost_clock_mhz": 1733,
+                "memory_gb": 8,
+                "price_usd": 599
+            },
+            {
+                "name": "GTX 1070 Ti",
+                "launch_date": 2017,
+                "core_clock_mhz": 1607,
+                "boost_clock_mhz": 1683,
+                "memory_gb": 8,
+                "price_usd": 449
+            },
+            {
+                "name": "GTX 1060",
+                "launch_date": 2016,
+                "core_clock_mhz": 1506,
+                "boost_clock_mhz": 1708,
+                "memory_gb": 6,
+                "price_usd": 249
+            }
+        ]
+    },
+    {
+        "brand": "AMD",
+        "series": "RX 500 Series",
+        "models": [
+            {
+                "name": "RX 580",
+                "launch_date": 2017,
+                "core_clock_mhz": 1340,
+                "boost_clock_mhz": 1340,
+                "memory_gb": 8,
+                "price_usd": 229
+            },
+            {
+                "name": "RX 570",
+                "launch_date": 2017,
+                "core_clock_mhz": 1168,
+                "boost_clock_mhz": 1244,
+                "memory_gb": 4,
+                "price_usd": 169
+            },
+            {
+                "name": "RX 560",
+                "launch_date": 2017,
+                "core_clock_mhz": 1275,
+                "boost_clock_mhz": 1340,
+                "memory_gb": 4,
+                "price_usd": 99
+            }
+        ]
+    },
+    {
+        "brand": "NVIDIA",
+        "series": "2000 Series",
+        "models": [
+            {
+                "name": "RTX 2080 Ti",
+                "launch_date": 2018,
+                "core_clock_mhz": 1350,
+                "boost_clock_mhz": 1545,
+                "memory_gb": 11,
+                "price_usd": 999
+            },
+            {
+                "name": "RTX 2080",
+                "launch_date": 2018,
+                "core_clock_mhz": 1515,
+                "boost_clock_mhz": 1710,
+                "memory_gb": 8,
+                "price_usd": 699
+            },
+            {
+                "name": "RTX 2070",
+                "launch_date": 2018,
+                "core_clock_mhz": 1410,
+                "boost_clock_mhz": 1620,
+                "memory_gb": 8,
+                "price_usd": 499
+            },
+            {
+                "name": "RTX 2060",
+                "launch_date": 2019,
+                "core_clock_mhz": 1365,
+                "boost_clock_mhz": 1680,
+                "memory_gb": 6,
+                "price_usd": 349
+            }
+        ]
+    },
+    {
+        "brand": "AMD",
+        "series": "RX 5000 Series",
+        "models": [
+            {
+                "name": "RX 5700 XT",
+                "launch_date": 2019,
+                "core_clock_mhz": 1605,
+                "boost_clock_mhz": 1905,
+                "memory_gb": 8,
+                "price_usd": 399
+            },
+            {
+                "name": "RX 5700",
+                "launch_date": 2019,
+                "core_clock_mhz": 1465,
+                "boost_clock_mhz": 1725,
+                "memory_gb": 8,
+                "price_usd": 349
+            },
+            {
+                "name": "RX 5600 XT",
+                "launch_date": 2020,
+                "core_clock_mhz": 1375,
+                "boost_clock_mhz": 1560,
+                "memory_gb": 6,
+                "price_usd": 279
+            },
+            {
+                "name": "RX 5500 XT",
+                "launch_date": 2019,
+                "core_clock_mhz": 1717,
+                "boost_clock_mhz": 1845,
+                "memory_gb": 4,
+                "price_usd": 199
+            }
+        ]
+    },
+    {
+        "brand": "NVIDIA",
+        "series": "3000 Series",
+        "models": [
+            {
+                "name": "RTX 3090",
+                "launch_date": 2020,
+                "core_clock_mhz": 1395,
+                "boost_clock_mhz": 1695,
+                "memory_gb": 24,
+                "price_usd": 1499
+            },
+            {
+                "name": "RTX 3080",
+                "launch_date": 2020,
+                "core_clock_mhz": 1440,
+                "boost_clock_mhz": 1710,
+                "memory_gb": 10,
+                "price_usd": 699
+            },
+            {
+                "name": "RTX 3070",
+                "launch_date": 2020,
+                "core_clock_mhz": 1500,
+                "boost_clock_mhz": 1730,
+                "memory_gb": 8,
+                "price_usd": 499
+            },
+            {
+                "name": "RTX 3060 Ti",
+                "launch_date": 2020,
+                "core_clock_mhz": 1410,
+                "boost_clock_mhz": 1665,
+                "memory_gb": 8,
+                "price_usd": 399
+            }
+        ]
+    },
+    {
+        "brand": "AMD",
+        "series": "RX 6000 Series",
+        "models": [
+            {
+                "name": "RX 6900 XT",
+                "launch_date": 2020,
+                "core_clock_mhz": 1825,
+                "boost_clock_mhz": 2250,
+                "memory_gb": 16,
+                "price_usd": 999
+            },
+            {
+                "name": "RX 6800 XT",
+                "launch_date": 2020,
+                "core_clock_mhz": 1825,
+                "boost_clock_mhz": 2250,
+                "memory_gb": 16,
+                "price_usd": 649
+            },
+            {
+                "name": "RX 6800",
+                "launch_date": 2020,
+                "core_clock_mhz": 1700,
+                "boost_clock_mhz": 2105,
+                "memory_gb": 16,
+                "price_usd": 579
+            },
+            {
+                "name": "RX 6700 XT",
+                "launch_date": 2021,
+                "core_clock_mhz": 2321,
+                "boost_clock_mhz": 2581,
+                "memory_gb": 12,
+                "price_usd": 479
+            }
+        ]
+    },
+    {
+        "brand": "NVIDIA",
+        "series": "4000 Series",
+        "models": [
+            {
+                "name": "RTX 4090",
+                "launch_date": 2022,
+                "core_clock_mhz": 2235,
+                "boost_clock_mhz": 2520,
+                "memory_gb": 24,
+                "price_usd": 1599
+            },
+            {
+                "name": "RTX 4080",
+                "launch_date": 2022,
+                "core_clock_mhz": 2205,
+                "boost_clock_mhz": 2505,
+                "memory_gb": 16,
+                "price_usd": 1199
+            },
+            {
+                "name": "RTX 4070 Ti",
+                "launch_date": 2023,
+                "core_clock_mhz": 2310,
+                "boost_clock_mhz": 2610,
+                "memory_gb": 12,
+                "price_usd": 799
+            }
+        ]
+    }
+]

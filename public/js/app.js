@@ -23,17 +23,32 @@ async function fetchGPUs() {
 
     try {
         console.log("Fetching GPU data...");
-        const response = await fetch('https://raw.githubusercontent.com/docyx/pc-part-dataset/main/data/json/video-card.json');
+        const response = await fetch('./js/gpu.json');
         const data = await response.json();
 
         // Filter GPUs to include only those with all required parameters and defined price
-        const gpusWithAllParameters = data.filter(gpu => {
-            return gpu.price !== null && gpu.price !== undefined &&
-                   gpu.chipset !== null && gpu.chipset !== undefined &&
-                   gpu.core_clock !== null && gpu.core_clock !== undefined &&
-                   gpu.boost_clock !== null && gpu.boost_clock !== undefined &&
-                   gpu.memory !== null && gpu.memory !== undefined;
-        });
+        const gpusWithAllParameters = data
+            .flatMap(series => series.models) // Extract all models from each series
+            .filter(gpu => {
+                // Use release_year to construct launch_date if it's missing
+                if (!gpu.launch_date && gpu.release_year) {
+                    gpu.launch_date = `${gpu.release_year}-01-01`; // Default to January 1st of the release year
+                }
+
+                // Check for all required parameters after setting a default launch_date if needed
+                const hasAllParameters = gpu.price_usd !== null && gpu.price_usd !== undefined &&
+                                         gpu.name !== null && gpu.name !== undefined &&
+                                         gpu.core_clock_mhz !== null && gpu.core_clock_mhz !== undefined &&
+                                         gpu.boost_clock_mhz !== null && gpu.boost_clock_mhz !== undefined &&
+                                         gpu.memory_gb !== null && gpu.memory_gb !== undefined &&
+                                         gpu.launch_date !== null && gpu.launch_date !== undefined;
+
+                if (!hasAllParameters) {
+                    console.warn("GPU skipped due to missing parameters:", gpu);
+                }
+
+                return hasAllParameters;
+            });
 
         cache.gpus = gpusWithAllParameters; // Cache the filtered data
         console.log("Filtered GPU data with all parameters:", gpusWithAllParameters);
@@ -42,8 +57,6 @@ async function fetchGPUs() {
         console.error('Error fetching GPU data:', error);
     }
 }
-
-
 
 // Helper function to populate dropdowns with data
 function populateDropdown(dropdownId, items, formatFunction) {
@@ -71,35 +84,48 @@ function formatCPUOption({ name, core_count = 0, core_clock = 0, boost_clock = 0
     };
 }
 
-// Format GPU options for the dropdown
-function formatGPUOption({ name, price = 0, chipset, memory = 0, core_clock = 0, boost_clock = 0 }) {
-    return {
-        name,
-        price: price || 0, // Set default price to 0 if price is null or undefined
-        chipset,
-        memory,
-        core_clock,
-        boost_clock,
-        displayText: `${name} (${chipset}, ${memory}GB VRAM, ${core_clock} MHz core)`
+// Helper function to format GPU data for dropdown display
+function formatGPUOption(gpu) {
+    const formattedOption = {
+        name: gpu.name,
+        coreClock: gpu.core_clock_mhz,
+        boostClock: gpu.boost_clock_mhz,
+        memory: gpu.memory_gb,
+        price: gpu.price_usd,
+        launchDate: gpu.launch_date,
+        displayText: `${gpu.name} (${gpu.memory_gb}GB, ${gpu.core_clock_mhz} MHz Core, ${gpu.boost_clock_mhz} MHz Boost, Launched: ${gpu.launch_date}, $${gpu.price_usd})`
     };
+    console.log("Formatted GPU option:", formattedOption);
+    return formattedOption;
 }
 
-// Calculate depreciation based on launch date
+// Calculate depreciation based on launch date or just the year
 function calculateDepreciation(launchDate) {
-    const ageInYears = (new Date() - new Date(launchDate)) / (1000 * 60 * 60 * 24 * 365);
-    
+    let date;
+
+    // Check if launchDate is only a year
+    if (/^\d{4}$/.test(launchDate)) {
+        date = new Date(`${launchDate}-01-01`); // Convert year to January 1st of that year
+    } else {
+        date = new Date(launchDate);
+    }
+
+    // Calculate the age in years
+    const ageInYears = (new Date() - date) / (1000 * 60 * 60 * 24 * 365);
+
     // Adjust depreciation rate for more aggressive depreciation
-    const depreciation = Math.max(0.2, 1 - (ageInYears * 0.1)); // 20% depreciation per year
-    
+    const depreciation = Math.max(0.2, 1 - (ageInYears * 0.2)); // 20% depreciation per year
+
     console.log(`Calculated depreciation for ${launchDate}:`, depreciation);
     return depreciation;
 }
-
 
 // Calculate and display the estimated offer
 function calculateOffer() {
     try {
         console.log("Starting offer calculation...");
+
+        // Retrieve values and parse JSON data from selected options
         const cpuData = JSON.parse(document.getElementById('cpu').value);
         const gpuData = JSON.parse(document.getElementById('gpu').value);
         const ram = parseFloat(document.getElementById('ram').value) || 0;
@@ -111,49 +137,50 @@ function calculateOffer() {
         console.log("GPU Data:", gpuData);
 
         // CPU price calculation with performance score, depreciation, and base multiplier
-        const cpuPerformanceScore = (cpuData.core_count * 10) + (cpuData.core_clock * 5) + (cpuData.boost_clock * 2);
+        const cpuPerformanceScore = (cpuData.core_count * 12) + (cpuData.core_clock * 5) + (cpuData.boost_clock * 4);
         const cpuPrice = cpuPerformanceScore * calculateDepreciation(cpuData.launch_date) * 2;
         console.log("CPU Performance Score:", cpuPerformanceScore, "CPU Price:", cpuPrice);
 
+        // Verify and set GPU properties with fallback values if they are missing or invalid
+        const gpuMemory = gpuData.memory || 0;
+        const gpuCoreClock = gpuData.coreClock || 0;
+        const gpuBoostClock = gpuData.boostClock || 0;
+        const gpuPriceBase = gpuData.price || 0;
+
+        console.log("GPU Memory:", gpuMemory, "GPU Core Clock:", gpuCoreClock, "GPU Boost Clock:", gpuBoostClock, "GPU Base Price:", gpuPriceBase);
+
         // Adjusted GPU performance score calculation to contribute 2/3 of the final price
-        const gpuPerformanceScore = (gpuData.memory * 0.15) + (gpuData.core_clock * 0.08) + (gpuData.boost_clock * 0.09);
-        const depreciationFactor = calculateDepreciation(gpuData.launch_date || '2020-01-01');
+        const gpuPerformanceScore = (gpuMemory * 0.15) + (gpuCoreClock * 0.08) + (gpuBoostClock * 0.09);
+        const depreciationFactor = calculateDepreciation(gpuData.launchDate);
 
-        // Calculate the adjusted GPU price based on the performance score with depreciation
-        const calculatedGpuPrice = gpuPerformanceScore * depreciationFactor * 1.5; // Adjusted multiplier for 2/3 weight
+        const calculatedGpuPrice = gpuPerformanceScore * depreciationFactor * 1.5;
 
-        // Final GPU price with 2/3 based on calculated performance and 1/3 based on the provided price (if available)
-        const gpuPrice = gpuData.price
-            ? ((3 / 4) * calculatedGpuPrice + (1 / 4) * (gpuData.price * depreciationFactor))
+        const gpuPrice = gpuPriceBase
+            ? ((2 / 3) * calculatedGpuPrice + (1 / 3) * (gpuPriceBase * depreciationFactor))
             : calculatedGpuPrice;
 
         console.log("GPU Performance Score:", gpuPerformanceScore, "Calculated GPU Price:", calculatedGpuPrice, "Final GPU Price:", gpuPrice);
 
-        // RAM price based on 4 € per GB as a baseline
-        const ramPrice = ram * 2;
+        const ramPrice = ram * 4;
         console.log("RAM Price:", ramPrice);
 
-        // Storage pricing with SSD premium multiplier
-        const storageMultiplier = storageType === "ssd" ? 0.1 : 0.05;
+        const storageMultiplier = storageType === "ssd" ? 0.10 : 0.04;
         const storagePrice = storage * storageMultiplier;
         console.log("Storage Price:", storagePrice);
 
-        // Calculate the base price from all components
         const basePrice = cpuPrice + gpuPrice + ramPrice + storagePrice;
         console.log("Base Price:", basePrice);
 
-        // Apply condition multiplier with realistic values
         const conditionMultiplier = {
-            'new': 0.95,
+            'new': 1.1,
             'like-new': 0.85,
             'used': 0.7,
             'worn': 0.5
         }[condition] || 0.7;
-        
+
         const offer = basePrice * conditionMultiplier;
         console.log("Condition Multiplier:", conditionMultiplier, "Final Offer:", offer);
 
-        // Display the offer result
         document.getElementById('offerAmount').textContent = `${offer.toFixed(2)} €`;
         document.getElementById('offerResult').classList.remove('hidden');
     } catch (error) {
