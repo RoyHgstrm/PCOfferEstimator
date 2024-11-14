@@ -21,12 +21,12 @@ A web app that calculates offers for used PC components based on specifications 
    ```cd PCOfferEstimator```
    
 
-Install dependencies:
+2. Install dependencies:
 
 ```npm install```
 
 
-Start the application:
+3. Start the application:
 
 ```npm start```
 
