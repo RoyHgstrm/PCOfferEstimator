@@ -18,12 +18,15 @@ A web app that calculates offers for used PC components based on specifications 
    
    ```git clone https://github.com/RoyHgstrm/PCOfferEstimator.git```
    ```cd PCOfferEstimator```
+
 Install dependencies:
 
 ```npm install```
+
 Start the application:
 
 ```npm start```
+
 Open the app in your browser: Go to http://localhost:9061 to access the app.
 
 ## License
