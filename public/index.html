@@ -13,7 +13,7 @@
         .dark .bg-gradient-to-r { background-image: linear-gradient(to right, #374151, #111827); }
     </style>
 </head>
-<body class="bg-gradient-to-r from-blue-200 via-indigo-200 to-purple-200 dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-900 dark:to-black min-h-screen flex items-center justify-center transition-colors duration-300">
+<body class="bg-gradient-to-r from-blue-200 via-indigo-200 to-purple-200 dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-900 dark:to-black min-h-screen transition-colors duration-300">
 
     <!-- Dark Mode Toggle Switch -->
     <div class="absolute top-6 right-6 flex items-center">
@@ -29,8 +29,8 @@
     </div>
     
     <!-- Main Form Container -->
-    <div class="container mx-auto px-6 py-10">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-10 max-w-lg mx-auto transition-colors duration-300">
+    <div class="px-6 py-10">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-10 w-full mx-auto transition-colors duration-300 max-w-4xl">
             <h1 class="text-4xl font-extrabold text-center text-gray-800 dark:text-gray-300 mb-6">PC Offer Estimator</h1>
             <p class="text-lg text-gray-800 dark:text-gray-300 text-center mb-8">Enter your PC specifications to get an estimated offer.</p>
 
@@ -38,8 +38,8 @@
                 <div class="form-control text-gray-800 dark:text-gray-300">
                     <label class="label font-semibold text-gray-800 dark:text-gray-300" for="cpuSearch">CPU</label>
                     <input type="text" id="cpuSearch" placeholder="Search CPU..."
-                           class="input input-bordered w-full rounded-lg shadow-sm mb-2 bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 text-sm md:text-base">
-                    <select id="cpu" name="cpu" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300 mb-4 md:mb-2 h-32 md:h-32 overflow-auto">
+                           class="input input-bordered w-full rounded-lg border-gray-600 shadow-lg mb-2 bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 text-sm md:text-base">
+                    <select id="cpu" name="cpu" class="border-gray-600 border p-2 shadow-lg select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300 mb-4 md:mb-2 h-32 md:h-32 overflow-auto">
                         <!-- CPU options will be populated here -->
                     </select>
                 </div>
@@ -47,44 +47,123 @@
                 <div class="form-control text-gray-800 dark:text-gray-300">
                     <label class="label font-semibold text-gray-800 dark:text-gray-300" for="gpuSearch">GPU</label>
                     <input type="text" id="gpuSearch" placeholder="Search GPU..."
-                           class="input input-bordered w-full rounded-lg shadow-sm mb-2 bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 text-sm md:text-base">
-                    <select id="gpu" name="gpu" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300 mb-4 md:mb-2 h-32 md:h-32 overflow-auto">
+                           class="input input-bordered w-full rounded-lg border-gray-600 shadow-lg mb-2 bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 text-sm md:text-base">
+                    <select id="gpu" name="gpu" class="border-gray-600 border p-2 shadow-lg select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300 mb-4 md:mb-2 h-32 md:h-32 overflow-auto">
                         <!-- GPU options will be populated here -->
                     </select>
                 </div>
                 
-                
-                
-            
                 <div class="form-control text-gray-800 dark:text-gray-300">
                     <label class="label font-semibold text-gray-800 dark:text-gray-300" for="ram">RAM (GB)</label>
                     <input type="number" id="ram" name="ram" placeholder="e.g., 16"
-                           class="input input-bordered w-full rounded-lg shadow-sm bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
+                           class="input input-bordered w-full rounded-lg border-gray-600 shadow-lg bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
                 </div>
-            
+                
                 <div class="form-control text-gray-800 dark:text-gray-300">
-                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="storage">Storage (GB)</label>
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="ramType">RAM Type</label>
+                    <select id="ramType" name="ramType" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300">
+                        <option value="DDR3">DDR3 (2007-2014)</option>
+                        <option value="DDR4" selected>DDR4 (2014-present)</option>
+                        <option value="DDR5">DDR5 (2020-present)</option>
+                    </select>
+                </div>
+                
+                
+            
+                <!-- Primary Storage -->
+                <div class="form-control text-gray-800 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="storage">Primary Storage (GB)</label>
                     <input type="number" id="storage" name="storage" placeholder="e.g., 512"
-                           class="input input-bordered w-full rounded-lg shadow-sm bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
+                        class="input input-bordered w-full rounded-lg border-gray-600 shadow-lg bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
                 </div>
-            
+
                 <div class="form-control text-gray-800 dark:text-gray-300">
-                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="storageType">Storage Type</label>
-                    <select id="storageType" name="storageType" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="storageType">Primary Storage Type</label>
+                    <select id="storageType" name="storageType" class="select border-gray-600 shadow-lg select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300">
                         <option value="ssd">SSD</option>
                         <option value="hdd">HDD</option>
                     </select>
                 </div>
+
+                <!-- Secondary Storage -->
+                <div class="form-control text-gray-800 dark:text-gray-300 mt-4">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="secondaryStorage">Secondary Storage (GB)</label>
+                    <input type="number" id="secondaryStorage" name="secondaryStorage" placeholder="e.g., 1024"
+                        class="input input-bordered w-full rounded-lg border-gray-600 shadow-lg bg-white dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400">
+                </div>
+
+                <div class="form-control text-gray-800 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="secondaryStorageType">Secondary Storage Type</label>
+                    <select id="secondaryStorageType" name="secondaryStorageType" class="select border-gray-600 shadow-lg select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300">
+                        <option value="none">None</option>
+                        <option value="ssd">SSD</option>
+                        <option value="hdd">HDD</option>
+                    </select>
+                </div>
+
+
+                <div class="form-control text-gray-800 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="psu">Power Supply Unit (PSU)</label>
+                    <select id="psu" name="psu" class="select border-gray-600 shadow-lg select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300">
+                        <!-- Options will be populated here -->
+                    </select>
+                </div>
+                
+                <script>
+                    // Array for PSU wattages and efficiency ratings
+                    const psuOptions = [
+                        { wattage: 300, certifications: ["80 Plus"] },
+                        { wattage: 400, certifications: ["80 Plus", "Bronze"] },
+                        { wattage: 500, certifications: ["80 Plus", "Bronze", "Silver"] },
+                        { wattage: 600, certifications: ["80 Plus", "Bronze", "Silver", "Gold"] },
+                        { wattage: 700, certifications: ["Bronze", "Silver", "Gold"] },
+                        { wattage: 750, certifications: ["Bronze", "Silver", "Gold"] },
+                        { wattage: 850, certifications: ["Gold", "Platinum"] },
+                        { wattage: 1000, certifications: ["Gold", "Platinum", "Titanium"] },
+                        { wattage: 1200, certifications: ["Platinum", "Titanium"] },
+                        { wattage: 1600, certifications: ["Titanium"] },
+                    ];
+                
+                    // Populate the PSU dropdown
+                    const psuDropdown = document.getElementById("psu");
+                    psuDropdown.innerHTML = '<option value="unknown">Unknown</option>'; // Default option
+                
+                    psuOptions.forEach(option => {
+                        option.certifications.forEach(cert => {
+                            const opt = document.createElement("option");
+                            opt.value = `${option.wattage}W ${cert}`;
+                            opt.text = `${option.wattage}W - 80 Plus ${cert}`;
+                            psuDropdown.appendChild(opt);
+                        });
+                    });
+                </script>
+                
+
+                
+
+
             
                 <div class="form-control text-gray-800 dark:text-gray-300">
+                    <label class="label font-semibold text-gray-800 dark:text-gray-300" for="buySellToggle">Transaction Type</label>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center cursor-pointer">
+                            <span class="mr-2 text-gray-800 dark:text-gray-300">Buy</span>
+                            <input type="checkbox" id="buySellToggle" name="buySellToggle" class="toggle toggle-primary" />
+                            <span class="ml-2 text-gray-800 dark:text-gray-300">Sell</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-control text-gray-800 dark:text-gray-300">
                     <label class="label font-semibold text-gray-800 dark:text-gray-300" for="condition">Condition</label>
-                    <select id="condition" name="condition" class="select select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300">
+                    <select id="condition" name="condition" class="select border-gray-600 shadow-lg select-bordered w-full rounded-lg bg-white dark:bg-gray-700 dark:text-gray-300">
                         <option value="new">New</option>
                         <option value="like-new">Like New</option>
                         <option value="used">Used</option>
                         <option value="worn">Worn</option>
                     </select>
                 </div>
+                
             
                 <button type="button" onclick="calculateOffer()" class="btn btn-primary w-full rounded-lg text-lg mt-6">Get Offer</button>
             </form>
@@ -94,17 +173,16 @@
                 <p id="offerAmount" class="text-3xl font-extrabold text-center text-green-600 dark:text-green-400 mt-4"></p>
             </div>
 
-            <div class="text-gray-600 dark:text-gray-400 text-sm mt-10 space-y-3 border-t border-gray-200 dark:border-gray-600 pt-6">
-                <p><strong>New:</strong> Age: 0-1 year old, Usage Hours: Less than 100 hours, ideally zero. Condition: All components are in factory-fresh state with no wear. Performance and lifespan are at their peak due to no prior usage.</p>
-                <p><strong>Like New:</strong> Age: 1-2 years old, Usage Hours: Approximately 100-1,000 hours. Condition: Components show minimal use, with performance and longevity close to their original levels. Wear is barely noticeable, and all parts operate smoothly.</p>
-                <p><strong>Used:</strong> Age: 2-5 years old, Usage Hours: 1,000-5,000 hours. Condition: Components are moderately used with visible signs of wear, especially on performance-critical parts like the CPU, GPU, and storage. The system is fully functional but may have a shorter lifespan under high loads compared to newer components.</p>
-                <p><strong>Worn:</strong> Age: 5+ years old, Usage Hours: 5,000+ hours. Condition: Components are heavily used, with significant wear on the CPU, GPU, and storage drives. Some parts may need replacement or maintenance for optimal operation. Performance may be affected by age-related factors, such as thermal efficiency, and parts may be nearing the end of their expected lifespan.</p>
+            <div class="text-gray-600 dark:text-gray-400 text-sm mt-10 space-y-3 border-t border-gray-600 dark:border-gray-600 pt-6">
+                <p><strong>New:</strong> Age: 0-1 year old, Usage Hours: Less than 100 hours, ideally zero. Performance and lifespan are at their peak due to no prior usage.</p>
+                <p><strong>Like New:</strong> Age: 1-2 years old, Usage Hours: Approximately 100-1,000 hours. Components show minimal use, with performance close to original levels.</p>
+                <p><strong>Used:</strong> Age: 2-5 years old, Usage Hours: 1,000-5,000 hours. Components are moderately used with visible wear, fully functional but with reduced lifespan.</p>
+                <p><strong>Worn:</strong> Age: 5+ years old, Usage Hours: 5,000+ hours. Components are heavily used, may need replacement for optimal operation, nearing end of lifespan.</p>
             </div>
         </div>
     </div>
 
     <script src="/js/app.js"></script>
-
     
     <script>
         // Dark mode toggle

@@ -536,6 +536,61 @@
        ]
     },
     {
+        "brand": "NVIDIA",
+        "series": "GeForce 700 Series",
+        "models": [
+            {
+                "name": "GTX 780 Ti",
+                "launch_date": 2013,
+                "core_clock_mhz": 875,
+                "boost_clock_mhz": 928,
+                "memory_gb": 3,
+                "price_usd": 699
+            },
+            {
+                "name": "GTX 780",
+                "launch_date": 2013,
+                "core_clock_mhz": 863,
+                "boost_clock_mhz": 900,
+                "memory_gb": 3,
+                "price_usd": 649
+            },
+            {
+                "name": "GTX 770",
+                "launch_date": 2013,
+                "core_clock_mhz": 1046,
+                "boost_clock_mhz": 1085,
+                "memory_gb": 2,
+                "price_usd": 399
+            },
+            {
+                "name": "GTX 760",
+                "launch_date": 2013,
+                "core_clock_mhz": 980,
+                "boost_clock_mhz": 1033,
+                "memory_gb": 2,
+                "price_usd": 249
+            },
+            {
+                "name": "GTX 750 Ti",
+                "launch_date": 2014,
+                "core_clock_mhz": 1020,
+                "boost_clock_mhz": 1085,
+                "memory_gb": 2,
+                "price_usd": 149
+            },
+            {
+                "name": "GTX 750",
+                "launch_date": 2014,
+                "core_clock_mhz": 1020,
+                "boost_clock_mhz": 1085,
+                "memory_gb": 1,
+                "price_usd": 119
+            }
+        ]
+    },
+    
+    {
         "brand": "AMD",
         "series": "RX 7000 Series",
         "models": [

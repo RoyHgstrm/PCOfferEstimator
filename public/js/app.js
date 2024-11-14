@@ -21,26 +21,32 @@ async function fetchCPUs() {
         });
 
         // Use data from cpu2.json directly, adding launch dates from cpu.json if available
-        const cpusWithLaunchDates = data2.map(cpu => {
+        const uniqueCPUs = {};
+        data2.forEach(cpu => {
             const normalizedName = normalizeCPUName(cpu.name);
             const launchDate = launchDatesMap[normalizedName] || 'Unknown';
+            const uniqueKey = `${cpu.name}-${cpu.core_count}-${cpu.core_clock}`;
 
-            return {
-                name: cpu.name,
-                launch_date: launchDate,
-                core_count: cpu.core_count,
-                core_clock: cpu.core_clock,
-                boost_clock: cpu.boost_clock,
-                price: cpu.price, // Using price directly from cpu2.json
-                tdp: cpu.tdp || 'N/A',
-                graphics: cpu.graphics || 'N/A',
-                smt: cpu.smt || false,
-                displayText: `${cpu.name} - ${cpu.price ? `$${cpu.price.toFixed(2)}` : 'Price not available'} 
-                              (${cpu.core_count} cores, ${cpu.core_clock} GHz base, 
-                              ${cpu.boost_clock} GHz boost, Launched: ${launchDate})`
-            };
+            // Store unique CPUs in a map to avoid duplicates
+            if (!uniqueCPUs[uniqueKey]) {
+                uniqueCPUs[uniqueKey] = {
+                    name: cpu.name,
+                    launch_date: launchDate,
+                    core_count: cpu.core_count,
+                    core_clock: cpu.core_clock,
+                    boost_clock: cpu.boost_clock,
+                    price: cpu.price, // Using price directly from cpu2.json
+                    tdp: cpu.tdp || 'N/A',
+                    graphics: cpu.graphics || 'N/A',
+                    smt: cpu.smt || false,
+                    displayText: `${cpu.name} - ${cpu.price ? `$${cpu.price.toFixed(2)}` : 'Price not available'} 
+                                  (${cpu.core_count} cores, ${cpu.core_clock} GHz base, 
+                                  ${cpu.boost_clock} GHz boost, Launched: ${launchDate})`
+                };
+            }
         });
 
+        const cpusWithLaunchDates = Object.values(uniqueCPUs);
         console.log("CPUs with launch dates and prices:", cpusWithLaunchDates);
 
         // Cache the data and populate the dropdown
@@ -61,6 +67,7 @@ function normalizeCPUName(name) {
     console.log(`Normalized CPU name for "${name}": ${normalizedName}`);
     return normalizedName;
 }
+
 
 // Format CPU options for the dropdown, displaying name, price, core count, clock speeds, and launch date
 function formatCPUOption({
@@ -154,7 +161,7 @@ async function fetchGPUs() {
 
         const averagedGPUs = Object.values(groupedGPUs).map(gpu => ({
             name: gpu.name,
-            price_usd: gpu.count > 0 ? parseFloat((gpu.price_usd / gpu.count).toFixed(2)) : 0,
+            price_usd: gpu.count > 0 && gpu.price_usd > 0 ? parseFloat((gpu.price_usd / gpu.count).toFixed(2)) : null,
             core_clock_mhz: gpu.count > 0 ? parseFloat((gpu.core_clock_mhz / gpu.count).toFixed(2)) : 0,
             boost_clock_mhz: gpu.count > 0 ? parseFloat((gpu.boost_clock_mhz / gpu.count).toFixed(2)) : 0,
             memory_gb: gpu.memory_gb,
@@ -163,6 +170,7 @@ async function fetchGPUs() {
             color: gpu.color,
             length: gpu.length
         }));
+        
 
         cache.gpus = averagedGPUs;
         populateDropdown('gpu', cache.gpus, formatGPUOption);
@@ -235,7 +243,7 @@ function formatGPUOption(gpu) {
         memory: gpu.memory_gb,
         price: gpu.price_usd,
         launchDate: gpu.launch_date,
-        displayText: `${gpu.name} (${gpu.memory_gb}GB, ${gpu.core_clock_mhz} MHz Core, ${gpu.boost_clock_mhz} MHz Boost, Launched: ${gpu.launch_date}, $${gpu.price_usd})`
+        displayText: `${gpu.name}`
     };
     console.log("Formatted GPU option:", formattedOption);
     return formattedOption;
@@ -277,29 +285,50 @@ function calculateOffer() {
         console.log("RAM Amount (GB):", ram);
 
         const storage = parseFloat(document.getElementById('storage').value) || 0;
-        console.log("Storage Amount (GB):", storage);
+        console.log("Primary Storage Amount (GB):", storage);
 
         const storageType = document.getElementById('storageType').value || 'hdd';
-        console.log("Storage Type:", storageType);
+        console.log("Primary Storage Type:", storageType);
+
+        const secondaryStorage = parseFloat(document.getElementById('secondaryStorage').value) || 0;
+        console.log("Secondary Storage Amount (GB):", secondaryStorage);
+
+        const secondaryStorageType = document.getElementById('secondaryStorageType').value || 'none';
+        console.log("Secondary Storage Type:", secondaryStorageType);
 
         const condition = document.getElementById('condition').value || 'used';
         console.log("Item Condition:", condition);
 
-        // CPU price calculation using performance score and average with launch price if available
-        const cpuPerformanceScore = (cpuData.core_count * 12) + (cpuData.core_clock * 5) + (cpuData.boost_clock * 4);
+        // CPU price calculation using performance score, launch date, and average with launch price if available
+        const calculateDepreciationFactor = (launchYear) => {
+            const currentYear = new Date().getFullYear();
+            const age = currentYear - launchYear;
+            return age > 0 ? Math.max(0.2, 1 - age * 0.08) : 1; // 8% depreciation per year, minimum 50%
+        };
+
+        const cpuPerformanceScore = (cpuData.core_count * 12) + (cpuData.core_clock * 5) + (cpuData.boost_clock ? cpuData.boost_clock * 4 : 0);
         console.log("CPU Performance Score:", cpuPerformanceScore);
 
-        const estimatedCpuPrice = cpuPerformanceScore * 2;
-        console.log("Estimated CPU Price:", estimatedCpuPrice);
+        let estimatedCpuPrice = cpuPerformanceScore * 2;
+        console.log("Estimated CPU Price (based on performance):", estimatedCpuPrice);
 
-        // Average with launch price if available
         const launchCpuPrice = cpuData.price || null;
         console.log("Launch CPU Price:", launchCpuPrice);
 
+        let ageDepreciationFactor = 1;
+        if (cpuData.launch_date) {
+            const launchYear = parseInt(cpuData.launch_date);
+            if (!isNaN(launchYear)) {
+                ageDepreciationFactor = calculateDepreciationFactor(launchYear);
+                estimatedCpuPrice *= ageDepreciationFactor;
+                console.log("Depreciated Estimated CPU Price:", estimatedCpuPrice);
+            }
+        }
+
         const cpuFinalPrice = launchCpuPrice ?
-            (launchCpuPrice + estimatedCpuPrice) / 2 :
+            (launchCpuPrice * ageDepreciationFactor + estimatedCpuPrice) / 2 :
             estimatedCpuPrice;
-        console.log("Final CPU Price (average with launch price if available):", cpuFinalPrice);
+        console.log("Final CPU Price (average with launch price if available, with depreciation):", cpuFinalPrice);
 
         // GPU Calculation
         const gpuMemory = gpuData.memory || 0;
@@ -314,89 +343,105 @@ function calculateOffer() {
         const gpuPriceBase = gpuData.price || 0;
         console.log("GPU Base Price:", gpuPriceBase);
 
-        const gpuPerformanceScore = (gpuMemory * 0.15) + (gpuCoreClock * 0.08) + (gpuBoostClock * 0.09);
-        console.log("GPU Performance Score:", gpuPerformanceScore);
+        const gpuPerformanceScore = (gpuMemory * 0.18) + (gpuCoreClock * 0.030) + (gpuBoostClock * 0.045);
+        console.log("Advanced GPU Performance Score:", gpuPerformanceScore);
 
-        const calculatedGpuPrice = gpuPerformanceScore * 1.5;
-        console.log("Calculated GPU Price (based on performance):", calculatedGpuPrice);
+        const realisticGpuPriceCap = Math.min(gpuPerformanceScore * 1.2 * 0.9, gpuPriceBase * 1.4);
+        const gpuFinalPrice = (gpuPriceBase + realisticGpuPriceCap) / 2;
+        console.log("Final GPU Price with Cap Adjustment:", gpuFinalPrice);
 
-        const gpuFinalPrice = gpuPriceBase > calculatedGpuPrice ?
-            calculatedGpuPrice :
-            gpuPriceBase;
-        console.log("Final GPU Price:", gpuFinalPrice);
+        // RAM Price Calculation
+        const ramType = document.getElementById('ramType').value || 'DDR3';
+        const ramTypeMultiplier = { 'DDR3': 0.6, 'DDR4': 1.0, 'DDR5': 1.3 }[ramType] || 1.0;
+        const ramPrice = ram * 3 * ramTypeMultiplier;
+        console.log("RAM Price (with type adjustment):", ramPrice);
 
-        // RAM and Storage Calculations
-        const ramPrice = ram * 3;
-        console.log("RAM Price:", ramPrice);
-
-        const storageMultiplier = storageType.toLowerCase() === "ssd" ? 0.10 : 0.04;
-        console.log("Storage Price Multiplier (based on type):", storageMultiplier);
-
+        // Storage Price Calculations with Realistic Multipliers
+        const storageMultiplier = storageType.toLowerCase() === "ssd" ? 0.09 : 0.03; // Adjusted multipliers based on recent SSD and HDD prices
         const storagePrice = storage * storageMultiplier;
-        console.log("Storage Price:", storagePrice);
+        console.log("Primary Storage Price:", storagePrice);
 
-        // Total Base Price
-        const basePrice = cpuFinalPrice + gpuFinalPrice + ramPrice + storagePrice;
-        console.log("Total Base Price:", basePrice);
+        let secondaryStoragePrice = 0;
+        if (secondaryStorageType !== 'none') {
+            const secondaryStorageMultiplier = secondaryStorageType.toLowerCase() === "ssd" ? 0.09 : 0.03; // Secondary storage type multiplier based on recent data
+            secondaryStoragePrice = secondaryStorage * secondaryStorageMultiplier;
+            console.log("Secondary Storage Price:", secondaryStoragePrice);
+        }
 
-        // Advanced Condition Multiplier Calculation
-        let conditionMultiplier = 0.6; // Default fallback for unknown conditions
+        // Total storage price
+        const totalStoragePrice = storagePrice + secondaryStoragePrice;
+        console.log("Total Storage Price:", totalStoragePrice);
 
-        const conditionLevels = {
-            'new': {
-                base: 0.95,
-                ageAdjustment: 0,
-                wearAdjustment: 0
-            },
-            'like-new': {
-                base: 0.8,
-                ageAdjustment: -0.03,
-                wearAdjustment: -0.02
-            },
-            'used': {
-                base: 0.6,
-                ageAdjustment: -0.04,
-                wearAdjustment: -0.03
-            },
-            'worn': {
-                base: 0.4,
-                ageAdjustment: -0.06,
-                wearAdjustment: -0.04
-            }
+        // Define more varied PSU multipliers based on wattage and certification level
+        const psuWattageMultiplier = {
+            300: 0.7, 
+            400: 0.9, 
+            500: 1.1, 
+            600: 1.3, 
+            700: 1.5, 
+            750: 1.7, 
+            850: 1.9, 
+            1000: 2.1,
+            1200: 2.5,
+            1600: 3.0  // Higher multiplier for very high wattage PSUs
         };
 
-        // Define age and wear level as factors for adjustments
-        const ageBracket = 3; // Estimated number of years old (example)
-        const wearLevel = 2; // Wear level from 1 to 5, where 5 is most worn
+        const psuCertificationMultiplier = {
+            "80 Plus": 0.7,
+            "80 Plus Bronze": 1.0,
+            "80 Plus Silver": 1.3,
+            "80 Plus Gold": 1.6,
+            "80 Plus Platinum": 1.9,
+            "80 Plus Titanium": 2.2  // Higher multiplier for Titanium-rated efficiency
+        };
 
-        const conditionData = conditionLevels[condition.toLowerCase()] || conditionLevels['used'];
+        // Retrieve the selected PSU value from the dropdown
+        const psuSelection = document.getElementById('psu').value;
+        console.log("PSU Selection:", psuSelection);
 
-        // Calculate age and wear adjustments
-        const ageAdjustment = conditionData.ageAdjustment * Math.min(ageBracket, 5); // Cap adjustments to max 5 years
-        const wearAdjustment = conditionData.wearAdjustment * Math.min(wearLevel, 5); // Cap wear adjustment to scale
+        // Check if the selection is "Unknown"
+        let psuPrice = 0;
+        if (psuSelection !== "Unknown") {
+            // Extract wattage and certification level from the selected PSU option
+            const [psuWattage, psuCertification] = psuSelection.split(" - ");
+            const psuWattageValue = parseInt(psuWattage);
+            const psuCertificationValue = psuCertification || "80 Plus"; // Default to "80 Plus" if undefined
 
-        // Final multiplier with minimum bound to avoid extreme low values
-        conditionMultiplier = Math.max(
-            0.25, // Minimum multiplier
-            conditionData.base + ageAdjustment + wearAdjustment
-        );
+            // Calculate PSU price based on wattage and certification level
+            if (psuWattageValue && psuCertificationValue) {
+                psuPrice = 40 * (psuWattageMultiplier[psuWattageValue] || 1.0) * (psuCertificationMultiplier[psuCertificationValue] || 1.0);
+            }
+        } else {
+            console.log("PSU selection is 'Unknown'. Setting PSU price to 0.");
+        }
 
-        console.log("Condition Multiplier (Advanced):", conditionMultiplier);
+        console.log("PSU Price:", psuPrice);
 
 
 
-        // Final Offer Calculation
-        const offer = basePrice * conditionMultiplier;
-        console.log("Final Offer:", offer);
+        // Total Base Price including PSU
+        const basePrice = cpuFinalPrice + gpuFinalPrice + ramPrice + storagePrice + secondaryStoragePrice + psuPrice;
+        console.log("Total Base Price:", basePrice);
+
+
+        // Condition Multiplier and Transaction Type Multiplier
+        const conditionMultiplier = { 'new': 1.0, 'like-new': 0.85, 'used': 0.75, 'worn': 0.5 }[condition] || 0.75;
+        const transactionMultiplier = document.getElementById('buySellToggle').checked ? 1.1 : 0.9;
+        console.log(`Transaction Multiplier (${document.getElementById('buySellToggle').checked ? 'sell' : 'buy'}):`, transactionMultiplier);
+
+        const finalOffer = basePrice * conditionMultiplier * transactionMultiplier;
+        console.log("Final Offer:", finalOffer);
 
         // Displaying the calculated offer
-        document.getElementById('offerAmount').textContent = `${offer.toFixed(2)} €`;
+        document.getElementById('offerAmount').textContent = `${finalOffer.toFixed(2)} €`;
         document.getElementById('offerResult').classList.remove('hidden');
+
     } catch (error) {
         console.error("Error calculating offer:", error);
         alert("Please ensure all fields are selected properly.");
     }
 }
+
 
 
 
