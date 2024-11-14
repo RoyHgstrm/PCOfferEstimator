@@ -31,7 +31,7 @@ async function fetchCPUs() {
                 core_count: cpu.core_count,
                 core_clock: cpu.core_clock,
                 boost_clock: cpu.boost_clock,
-                price: cpu.price,  // Using price directly from cpu2.json
+                price: cpu.price, // Using price directly from cpu2.json
                 tdp: cpu.tdp || 'N/A',
                 graphics: cpu.graphics || 'N/A',
                 smt: cpu.smt || false,
@@ -63,7 +63,14 @@ function normalizeCPUName(name) {
 }
 
 // Format CPU options for the dropdown, displaying name, price, core count, clock speeds, and launch date
-function formatCPUOption({ name, core_count = 0, core_clock = 0, boost_clock = 0, launch_date = 'Unknown', price = 'N/A' }) {
+function formatCPUOption({
+    name,
+    core_count = 0,
+    core_clock = 0,
+    boost_clock = 0,
+    launch_date = 'Unknown',
+    price = 'N/A'
+}) {
     return {
         name,
         core_count,
@@ -89,25 +96,6 @@ function populateDropdown(dropdownId, items, formatFunction) {
         dropdown.appendChild(option);
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -206,14 +194,6 @@ function normalizeGPUName(name) {
 
 
 
-
-
-
-
-
-
-
-
 // Helper function to populate dropdowns with data
 function populateDropdown(dropdownId, items, formatFunction) {
     const dropdown = document.getElementById(dropdownId);
@@ -229,7 +209,13 @@ function populateDropdown(dropdownId, items, formatFunction) {
 }
 
 // Format CPU options for the dropdown
-function formatCPUOption({ name, core_count = 0, core_clock = 0, boost_clock = 0, launch_date = '2020-01-01' }) {
+function formatCPUOption({
+    name,
+    core_count = 0,
+    core_clock = 0,
+    boost_clock = 0,
+    launch_date = '2020-01-01'
+}) {
     return {
         name,
         core_count,
@@ -310,9 +296,9 @@ function calculateOffer() {
         const launchCpuPrice = cpuData.price || null;
         console.log("Launch CPU Price:", launchCpuPrice);
 
-        const cpuFinalPrice = launchCpuPrice
-            ? (launchCpuPrice + estimatedCpuPrice) / 2
-            : estimatedCpuPrice;
+        const cpuFinalPrice = launchCpuPrice ?
+            (launchCpuPrice + estimatedCpuPrice) / 2 :
+            estimatedCpuPrice;
         console.log("Final CPU Price (average with launch price if available):", cpuFinalPrice);
 
         // GPU Calculation
@@ -334,9 +320,9 @@ function calculateOffer() {
         const calculatedGpuPrice = gpuPerformanceScore * 1.5;
         console.log("Calculated GPU Price (based on performance):", calculatedGpuPrice);
 
-        const gpuFinalPrice = gpuPriceBase > calculatedGpuPrice
-            ? calculatedGpuPrice
-            : gpuPriceBase;
+        const gpuFinalPrice = gpuPriceBase > calculatedGpuPrice ?
+            calculatedGpuPrice :
+            gpuPriceBase;
         console.log("Final GPU Price:", gpuFinalPrice);
 
         // RAM and Storage Calculations
@@ -357,10 +343,26 @@ function calculateOffer() {
         let conditionMultiplier = 0.6; // Default fallback for unknown conditions
 
         const conditionLevels = {
-            'new': { base: 0.95, ageAdjustment: 0, wearAdjustment: 0 },
-            'like-new': { base: 0.8, ageAdjustment: -0.03, wearAdjustment: -0.02 },
-            'used': { base: 0.6, ageAdjustment: -0.04, wearAdjustment: -0.03 },
-            'worn': { base: 0.4, ageAdjustment: -0.06, wearAdjustment: -0.04 }
+            'new': {
+                base: 0.95,
+                ageAdjustment: 0,
+                wearAdjustment: 0
+            },
+            'like-new': {
+                base: 0.8,
+                ageAdjustment: -0.03,
+                wearAdjustment: -0.02
+            },
+            'used': {
+                base: 0.6,
+                ageAdjustment: -0.04,
+                wearAdjustment: -0.03
+            },
+            'worn': {
+                base: 0.4,
+                ageAdjustment: -0.06,
+                wearAdjustment: -0.04
+            }
         };
 
         // Define age and wear level as factors for adjustments
@@ -395,7 +397,6 @@ function calculateOffer() {
         alert("Please ensure all fields are selected properly.");
     }
 }
-
 
 
 
