@@ -23,12 +23,12 @@ A web app that calculates offers for used PC components based on specifications 
 
 2. **Install dependencies**:
 
-```npm install```
+   ```npm install```
 
 
 3. **Start the application**:
 
-```npm start```
+   ```npm start```
 
 
 Open the app in your browser: Go to http://localhost:9061 to access the app.
