@@ -112,36 +112,37 @@ async function fetchGPUs() {
     if (cache.gpus) {
         return populateDropdown('gpu', cache.gpus);
     }
-
+    
     try {
-        const response1 = await fetch('./js/video-card.json');
-        const response2 = await fetch('./js/gpu.json');
-
-        const data1 = await response1.json();
-        const data2 = await response2.json();
-
+        const response1 = await fetch('./js/video-card.json'); // Data from video-card.json
+        const response2 = await fetch('./js/gpu.json'); // Data from gpu.json
+    
+        const data1 = await response1.json(); // Data from video-card.json
+        const data2 = await response2.json(); // Data from gpu.json
+    
         const gpuLaunchDates = {};
-
+    
+        // Loop through gpu.json data to gather launch dates for each GPU model
         data2.forEach(series => {
             series.models.forEach(gpu => {
                 const normalizedName = normalizeGPUName(gpu.name);
                 gpuLaunchDates[`${normalizedName}-${gpu.memory_gb}`] = gpu.launch_date;
             });
         });
-
+    
         const groupedGPUs = {};
-
+    
         data1.forEach(gpu => {
             const normalizedGPUName = normalizeGPUName(gpu.name);
             const memoryKey = `${normalizedGPUName}-${gpu.memory_gb}`;
-
+        
             const launchDate = gpuLaunchDates[memoryKey];
-            if (!launchDate) return;
-
+            if (!launchDate) return; // Skip if there's no launch date
+        
             if (!groupedGPUs[memoryKey]) {
                 groupedGPUs[memoryKey] = {
                     name: gpu.name,
-                    price_usd: 0,
+                    price_usd: [],
                     core_clock_mhz: 0,
                     boost_clock_mhz: 0,
                     memory_gb: gpu.memory_gb,
@@ -152,31 +153,75 @@ async function fetchGPUs() {
                     length: gpu.length || 0
                 };
             }
-
-            if (gpu.price_usd) groupedGPUs[memoryKey].price_usd += gpu.price_usd;
+        
+            // Collect valid prices from gpu.json and video-card.json
+            if (gpu.price_usd && gpu.price_usd > 0) {
+                groupedGPUs[memoryKey].price_usd.push(gpu.price_usd);
+            } else {
+                const fallbackGpu = data1.find(d => d.name === gpu.name && d.memory_gb === gpu.memory_gb);
+                if (fallbackGpu && fallbackGpu.price_usd && fallbackGpu.price_usd > 0) {
+                    groupedGPUs[memoryKey].price_usd.push(fallbackGpu.price_usd);
+                }
+            }
+        
+            // Accumulate core clock and boost clock values
             if (gpu.core_clock_mhz) groupedGPUs[memoryKey].core_clock_mhz += gpu.core_clock_mhz;
             if (gpu.boost_clock_mhz) groupedGPUs[memoryKey].boost_clock_mhz += gpu.boost_clock_mhz;
             groupedGPUs[memoryKey].count += 1;
         });
-
-        const averagedGPUs = Object.values(groupedGPUs).map(gpu => ({
-            name: gpu.name,
-            price_usd: gpu.count > 0 && gpu.price_usd > 0 ? parseFloat((gpu.price_usd / gpu.count).toFixed(2)) : null,
-            core_clock_mhz: gpu.count > 0 ? parseFloat((gpu.core_clock_mhz / gpu.count).toFixed(2)) : 0,
-            boost_clock_mhz: gpu.count > 0 ? parseFloat((gpu.boost_clock_mhz / gpu.count).toFixed(2)) : 0,
-            memory_gb: gpu.memory_gb,
-            launch_date: gpu.launch_date,
-            brand: gpu.brand,
-            color: gpu.color,
-            length: gpu.length
-        }));
         
+        // Function to get the average price after removing the highest 10% of prices (focusing on the lower side)
+        function getAdjustedAveragePrice(prices, percentage = 10) {
+            if (!prices || prices.length === 0) return 0;
 
+            // Sort prices in ascending order
+            prices.sort((a, b) => a - b);
+
+            // Calculate how many prices to remove from the top based on the percentage
+            const removeCount = Math.floor(prices.length * (percentage / 100));
+
+            // Remove the highest prices (focus on the lower side)
+            const adjustedPrices = prices.slice(0, prices.length - removeCount);
+
+            // Calculate the average of the remaining prices
+            const averagePrice = adjustedPrices.reduce((sum, price) => sum + price, 0) / adjustedPrices.length;
+
+            return averagePrice;
+        }
+
+
+
+        // Calculate the final price for each GPU
+        const averagedGPUs = Object.values(groupedGPUs).map(gpu => {
+            // Get the adjusted average price using getAdjustedAveragePrice function
+            const topPrice = getAdjustedAveragePrice(gpu.price_usd); // Get the top 10% of prices
+            
+            // If there are no valid prices, fall back to a reasonable default price
+            const finalPrice = topPrice > 0 ? topPrice : 150;
+            
+            return {
+                name: gpu.name,
+                price_usd: finalPrice,
+                core_clock_mhz: gpu.count > 0 ? parseFloat((gpu.core_clock_mhz / gpu.count).toFixed(2)) : 0,
+                boost_clock_mhz: gpu.count > 0 ? parseFloat((gpu.boost_clock_mhz / gpu.count).toFixed(2)) : 0,
+                memory_gb: gpu.memory_gb,
+                launch_date: gpu.launch_date,
+                brand: gpu.brand,
+                color: gpu.color,
+                length: gpu.length
+            };
+        });
+
+
+        // Cache the combined data and populate the dropdown
         cache.gpus = averagedGPUs;
         populateDropdown('gpu', cache.gpus, formatGPUOption);
+
     } catch (error) {
         console.error('Error fetching GPU data:', error);
     }
+    
+    
 }
 
 // Helper function to normalize GPU names by removing common prefixes and irrelevant words
@@ -306,7 +351,7 @@ function calculateOffer() {
             return age > 0 ? Math.max(0.2, 1 - age * 0.08) : 1; // 8% depreciation per year, minimum 50%
         };
 
-        const cpuPerformanceScore = (cpuData.core_count * 12) + (cpuData.core_clock * 5) + (cpuData.boost_clock ? cpuData.boost_clock * 4 : 0);
+        const cpuPerformanceScore = (cpuData.core_count * 7) + (cpuData.core_clock * 2) + (cpuData.boost_clock ? cpuData.boost_clock * 1.5 : 0);
         console.log("CPU Performance Score:", cpuPerformanceScore);
 
         let estimatedCpuPrice = cpuPerformanceScore * 2;
@@ -343,11 +388,16 @@ function calculateOffer() {
         const gpuPriceBase = gpuData.price || 0;
         console.log("GPU Base Price:", gpuPriceBase);
 
+        // GPU Performance Score Calculation
         const gpuPerformanceScore = (gpuMemory * 0.18) + (gpuCoreClock * 0.030) + (gpuBoostClock * 0.045);
         console.log("Advanced GPU Performance Score:", gpuPerformanceScore);
 
+        // Calculate the price cap based on performance score and base price
         const realisticGpuPriceCap = Math.min(gpuPerformanceScore * 1.2 * 0.9, gpuPriceBase * 1.4);
-        const gpuFinalPrice = (gpuPriceBase + realisticGpuPriceCap) / 2;
+        console.log("Realistic GPU Price Cap:", realisticGpuPriceCap);
+
+        // Calculate the final GPU price as the average between base price and the capped price
+        const gpuFinalPrice = (gpuPriceBase + realisticGpuPriceCap) / 2.5;
         console.log("Final GPU Price with Cap Adjustment:", gpuFinalPrice);
 
         // RAM Price Calculation
@@ -429,8 +479,9 @@ function calculateOffer() {
         const transactionMultiplier = document.getElementById('buySellToggle').checked ? 1.1 : 0.9;
         console.log(`Transaction Multiplier (${document.getElementById('buySellToggle').checked ? 'sell' : 'buy'}):`, transactionMultiplier);
 
-        const finalOffer = basePrice * conditionMultiplier * transactionMultiplier;
+        const finalOffer = basePrice * (conditionMultiplier || 1) * (transactionMultiplier || 1) * (ramTypeMultiplier || 1);
         console.log("Final Offer:", finalOffer);
+        
 
         // Displaying the calculated offer
         document.getElementById('offerAmount').textContent = `${finalOffer.toFixed(2)} €`;
